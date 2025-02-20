@@ -3,7 +3,7 @@ const router = express.Router();
 const Flight = require("../models/Flight"); // Vérifiez ce chemin
 
 // Récupérer tous les vols
-router.get("/flights", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const flights = await Flight.find();
     res.json(flights);
