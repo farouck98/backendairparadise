@@ -42,7 +42,11 @@ app.post("/api/webhook", async (req, res) => {
       console.log("📩 Paramètres reçus:", { origin_airport, destination_airport, date });
 
       try {
-          const flights = await Flight.find({ origin_airport, destination_airport, date });
+          const flights = await Flight.find({ 
+            origin_airport,
+            destination_airport: destination,
+            date
+          });
 
           if (flights.length > 0) {
               let responseText = "Voici les vols disponibles :\n";
