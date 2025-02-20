@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
 });
 
 // Webhook Dialogflow amélioré pour chercher des vols
-app.post("/webhook", async (req, res) => {
+app.post("/api/webhook", async (req, res) => {
   const intentName = req.body.queryResult.intent.displayName;
   console.log("✅ Webhook reçu avec intent:", intentName);
 
