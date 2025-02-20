@@ -38,13 +38,15 @@ app.post("/api/webhook", async (req, res) => {
   console.log("✅ Webhook reçu avec intent:", intentName);
 
   if (intentName === "Rechercher un vol") {
-      const { origin_airport, destination_airport, date } = req.body.queryResult.parameters;
-      console.log("📩 Paramètres reçus:", { origin_airport, destination_airport, date });
+    const origin_airport = req.body.queryResult.parameters.origin_airport;
+    const destination_airport = req.body.queryResult.parameters.destination || req.body.queryResult.parameters.destination_airport;
+    const date = req.body.queryResult.parameters.date;
+    console.log("📩 Paramètres reçus bruts:", JSON.stringify(req.body.queryResult.parameters, null, 2));
 
       try {
           const flights = await Flight.find({ 
             origin_airport,
-            destination_airport: destination,
+            destination_airport,
             date
           });
 
