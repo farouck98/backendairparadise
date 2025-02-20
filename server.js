@@ -6,6 +6,7 @@ const cors = require("cors");
 
 const app = express();
 const port = process.env.PORT || 3000;
+process.env.GOOGLE_APPLICATION_CREDENTIALS = "./config/key.json";
 
 // Activer CORS pour éviter les problèmes de requêtes entre Render et Postman/Dialogflow
 app.use(cors());
