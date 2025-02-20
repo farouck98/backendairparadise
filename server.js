@@ -47,7 +47,7 @@ app.post("/api/webhook", async (req, res) => {
           const flights = await Flight.find({ 
             origin_airport,
             destination_airport,
-            date
+            date: date.toString()
           });
 
           if (flights.length > 0) {
