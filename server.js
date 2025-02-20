@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const Flight = require("./models/Flight");
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -33,28 +35,28 @@ app.get("/", (req, res) => {
 // Webhook Dialogflow amélioré pour chercher des vols
 app.post("/webhook", async (req, res) => {
   const intentName = req.body.queryResult.intent.displayName;
-  console.log("Intent reçu:", intentName);
+  console.log("✅ Webhook reçu avec intent:", intentName);
 
   if (intentName === "Rechercher un vol") {
       const { origin_airport, destination_airport, date } = req.body.queryResult.parameters;
+      console.log("📩 Paramètres reçus:", { origin_airport, destination_airport, date });
 
       try {
-          const flights = await Flight.find({ 
-              origin_airport, 
-              destination_airport, 
-              date 
-          });
+          const flights = await Flight.find({ origin_airport, destination_airport, date });
 
           if (flights.length > 0) {
               let responseText = "Voici les vols disponibles :\n";
               flights.forEach(flight => {
                   responseText += `✈️ ${flight.airline} - ${flight.flight_number} - ${flight.departure_time}\n`;
               });
+              console.log("✅ Vols trouvés:", flights);
               res.json({ fulfillmentText: responseText });
           } else {
+              console.log("⚠️ Aucun vol trouvé.");
               res.json({ fulfillmentText: "Désolé, aucun vol disponible pour cette date et destination." });
           }
       } catch (error) {
+          console.error("❌ Erreur lors de la recherche:", error);
           res.json({ fulfillmentText: "Une erreur est survenue lors de la recherche des vols." });
       }
   } else {
