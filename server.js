@@ -32,35 +32,36 @@ app.get("/", (req, res) => {
 
 // Webhook Dialogflow amélioré pour chercher des vols
 app.post("/webhook", async (req, res) => {
-    const intentName = req.body.queryResult.intent.displayName;
-    console.log("Intent reçu:", intentName);
+  const intentName = req.body.queryResult.intent.displayName;
+  console.log("Intent reçu:", intentName);
 
-    if (intentName === "Rechercher un vol") {
-        const { destination, date } = req.body.queryResult.parameters;
-        try {
-            const Flight = require("./models/Flight");
-            const flights = await Flight.find({
-                destination_airport: destination,
-                date: date
-            });
+  if (intentName === "Rechercher un vol") {
+      const { origin_airport, destination_airport, date } = req.body.queryResult.parameters;
 
-            if (flights.length > 0) {
-                let responseText = "Voici les vols disponibles :\n";
-                flights.forEach(flight => {
-                    responseText += `✈ ${flight.airline} - ${flight.flight_number} - ${flight.departure_time} ➝ ${flight.arrival_time} - Prix: ${flight.price}€\n`;
-                });
+      try {
+          const flights = await Flight.find({ 
+              origin_airport, 
+              destination_airport, 
+              date 
+          });
 
-                res.json({ fulfillmentText: responseText });
-            } else {
-                res.json({ fulfillmentText: "Désolé, aucun vol disponible pour cette destination et date." });
-            }
-        } catch (error) {
-            res.json({ fulfillmentText: "Une erreur est survenue lors de la recherche des vols." });
-        }
-    } else {
-        res.json({ fulfillmentText: "Je n'ai pas compris votre demande." });
-    }
+          if (flights.length > 0) {
+              let responseText = "Voici les vols disponibles :\n";
+              flights.forEach(flight => {
+                  responseText += `✈️ ${flight.airline} - ${flight.flight_number} - ${flight.departure_time}\n`;
+              });
+              res.json({ fulfillmentText: responseText });
+          } else {
+              res.json({ fulfillmentText: "Désolé, aucun vol disponible pour cette date et destination." });
+          }
+      } catch (error) {
+          res.json({ fulfillmentText: "Une erreur est survenue lors de la recherche des vols." });
+      }
+  } else {
+      res.json({ fulfillmentText: "Je n'ai pas compris votre demande." });
+  }
 });
+
 
 // Lancer le serveur
 app.listen(port, () => {
