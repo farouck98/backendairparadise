@@ -70,6 +70,17 @@ app.post("/api/webhook", async (req, res) => {
   }
 });
 
+app.get("/test-flights", async (req, res) => {
+  try {
+      const testFlights = await Flight.find({ destination_airport: "JFK", date: "2024-06-20" });
+      console.log("🔎 Résultats trouvés dans MongoDB :", testFlights);
+      res.json(testFlights);
+  } catch (error) {
+      console.error("❌ Erreur lors de la requête de test :", error);
+      res.status(500).json({ message: "Erreur serveur", error });
+  }
+});
+
 
 // Lancer le serveur
 app.listen(port, () => {
