@@ -15,13 +15,27 @@ app.use(cors());
 
 // Connexion à MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 })
-.then(() => console.log("✅ MongoDB Atlas connecté"))
+.then(async () => {
+  console.log("✅ MongoDB Atlas connecté");
+
+})
 .catch(err => console.error("❌ Erreur de connexion MongoDB Atlas :", err));
 
-app.use(bodyParser.json());
+app.get("/check-all-flights", async (req, res) => {
+  try {
+      const allFlights = await Flight.find(); // Récupère tous les enregistrements
+      console.log("📌 Tous les vols dans MongoDB :", allFlights);
+      res.json(allFlights);
+  } catch (error) {
+      console.error("❌ Erreur lors de la récupération des vols :", error);
+      res.status(500).json({ message: "Erreur serveur", error });
+  }
+});
+
+
 
 // Importer les routes des vols
 const flightsRoutes = require("./routes/flights");
@@ -70,16 +84,7 @@ app.post("/api/webhook", async (req, res) => {
   }
 });
 
-app.get("/test-flights", async (req, res) => {
-  try {
-      const testFlights = await Flight.find({ destination_airport: "JFK", date: "2024-06-20" });
-      console.log("🔎 Résultats trouvés dans MongoDB :", testFlights);
-      res.json(testFlights);
-  } catch (error) {
-      console.error("❌ Erreur lors de la requête de test :", error);
-      res.status(500).json({ message: "Erreur serveur", error });
-  }
-});
+
 
 
 // Lancer le serveur
